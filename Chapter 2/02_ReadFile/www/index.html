@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  	<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width;" />
+    <title>Open File</title>
+	<script type="text/javascript" src="xui.js"></script>
+	<script type="text/javascript" src="cordova-2.0.0.js"></script>
+    <script type="text/javascript" >
+
+	var fileObject;
+
+	document.addEventListener("deviceready", onDeviceReady, true);
+	
+	function onDeviceReady() {
+		window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, onFileSystemSuccess, fail); 
+	}
+	
+	function onFileSystemSuccess(fileSystem) {
+        fileSystem.root.getFile("readme.txt", {create: true, exclusive: false}, gotFileEntry, fail);
+    }
+
+	function gotFileEntry(fileEntry) {
+		fileObject = fileEntry;
+
+		x$('#saveFile_btn').on('click', function() {
+			saveFileContent();
+		});
+    }
+	
+	function gotFileWriter(writer) {
+        var myText = document.getElementById('my_text').value;
+        writer.write(myText);
+		
+		writer.onwriteend = function(evt) {
+			x$('#message').html('<p>File contents have been written.<br /><strong>File path:</strong> ' + fileObject.fullPath + '</p>');
+			
+			var reader = new FileReader();
+			reader.onload = function(evt) {
+				x$('#contents').html('<strong>File contents:</strong> <br />' + evt.target.result);
+			};
+			reader.readAsText(fileObject);
+       	};
+		
+    }
+	
+	function saveFileContent() {
+		fileObject.createWriter(gotFileWriter, fail);
+	}
+	
+	function fail(error) {
+        alert(error.code);
+    }
+    </script>
+</head>
+<body>
+
+	<input type="text" id="my_text" />
+	<input type="button" id="saveFile_btn" value="Save" />
+
+	<div id="message"></div>
+	<div id="contents"></div>
+
+</body>
+</html>

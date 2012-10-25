@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width;" />
+	<title>CFHour</title>	
+	<link href="jquery/jquery.mobile-1.1.1.min.css" rel="stylesheet" type="text/css" />
+	<script src="jquery/jquery-1.8.0.min.js" type="text/javascript"></script>
+	<script src="jquery/jquery.mobile-1.1.1.min.js" type="text/javascript"></script>
+	<script src="cordova-2.0.0.js" type="text/javascript"></script>
+  </head>
+<body>
+
+<div data-role="page" id="home">
+
+  <div data-role="header" data-position="fixed">
+    <h1>CFHour Mobile</h1>
+  	<a href="#about" data-role="button" data-icon="info">About</a>
+  </div>
+
+  <div data-role="content">
+  	<p>CFHour is the number #1 ColdFusion podcast.</p>
+    
+    <p>Select a show to listen to:</p>
+    <ul id="showList" data-role="listview" data-inset="true"></ul>
+  </div>
+  
+  <div data-role="footer" data-position="fixed">
+    <h4>&copy; cfhour.com</h4>
+  </div>
+
+</div>
+
+
+<div data-role="page" id="about" data-add-back-btn="true">
+
+  <div data-role="header" data-position="fixed">
+    <h1>About CFHour</h1>
+    <!--<a href="#home" data-role="button" data-icon="back">Home</a>-->
+  </div>
+
+  <div data-role="content">
+  	<p>CFHour is a weekly podcast primarily focused on ColdFusion development, but brings you news and updates about all things 'web'.</p>
+    <p>Join your hosts Dave Ferguson, Scott Stroz and their producer Matt Gifford for the latest information, live shows and guest interviews.</p>
+    <p>
+  	<a href="http://www.cfhour.com" data-role="button">Visit www.cfhour.com</a>
+  	</p>
+  </div>
+  
+  <div data-role="footer" data-position="fixed">
+    <h4>&copy; cfhour.com</h4>
+  </div>
+
+</div>
+
+
+<div data-role="page" id="itemdetail" data-add-back-btn="true">
+
+  <div data-role="header" data-position="fixed">
+    <h1></h1>
+    <a href="#showdescription" data-role="button" data-icon="info" data-rel="dialog" class="ui-btn-right">Description</a>
+  </div>
+
+  <div data-role="content">
+  	
+	<h2 id="showTitle"></h2>
+  	
+	<div data-role="button" id="playaudio">Play</div>
+    <div data-role="button" id="pauseaudio">Pause</div>
+    <div data-role="button" id="stopaudio">Stop</div>
+
+    <div class="ui-grid-a">
+        <div class="ui-block-a"> Current: <span id="audio_position">0 sec</span></div>
+        <div class="ui-block-b">Total: <span id="audio_duration">0</span> sec</div>
+    </div>
+	
+  </div>
+  
+  <div data-role="footer" data-position="fixed">
+    <h4>&copy; cfhour.com</h4>
+  </div>
+
+</div>
+
+
+<div data-role="page" id="showDescription">
+
+  	<div data-role="header">
+    	<h1>Notes</h1>
+  	</div>
+
+	<div id="descriptionContent" data-role="content">
+		<p></p>
+		<a href="#" data-rel="back" data-role="button">Close</a>
+	</div>
+
+</div>
+
+</body>
+</html>
+<script type="text/javascript">
+var localStorage = window.localStorage;
+
+document.addEventListener("deviceready", onDeviceReady);
+
+function onDeviceReady() {
+	//alert('Im ready!');
+}
+	
+$("#home").bind("pagecreate", function(e) {
+	
+	getRemoteFeed();
+	
+	$('#showList').on('tap', 'li', function(){
+		localStorage.clear();
+		localStorage.setItem("enclosureURL", $(this).attr('data-enclosure'));
+		localStorage.setItem("showTitle", $(this).attr('data-show-title'));
+		localStorage.setItem("showDescription", $(this).attr('data-show-description'));
+			 
+		$.mobile.changePage('#itemdetail'); 
+    });
+	
+})
+
+var getRemoteFeed = function() {
+	
+	$.get("http://feeds2.feedburner.com/CfhourColdfusionPodcast", 
+		{},
+		function(data) {
+			
+			var listItem = '';
+						
+			$(data).find('item').each(function(){
+
+				var strXML = XMLtoString($(this));				
+				var showDescription = 
+					strXML.substring(strXML.indexOf('<itunes:subtitle>') + 17,
+							strXML.indexOf('</itunes:subtitle>'));
+				
+				listItem += '<li data-show-description="' 
+					+ showDescription + '" data-show-title="' 
+					+ $(this).find('title').text() + '" data-enclosure="'
+					+ $(this).find("enclosure").attr("url") +'" id="'
+					+ $(this).find("guid") +'"><h3><a>' 
+					+ $(this).find('title').text() + '</a></h3><p>Released: '
+					+ $(this).find('pubDate').text() +'</p></li>';
+			});
+			
+			$('#showList').append(listItem);
+			$("#showList").listview("refresh");
+		}
+	);
+};
+
+function XMLtoString(xmlNode) {
+    var rstr = "";
+    var node = $(xmlNode).get(0);
+
+    rstr = "<" + node.nodeName;
+
+    if (node.attributes.length > 0) {
+        for (var i = 0; i < node.attributes.length; i++) {
+            rstr += " " + node.attributes[i].name + "=\"" + node.attributes[i].value + "\"";
+        }
+    }
+
+    rstr += ">";
+
+    if ($(node).children().length > 0) {
+        $(node).children().each(function () {
+            rstr += XMLtoString($(this));
+        });
+    } else { // assume reached the end childnode, then only write the value (not attribute)
+        rstr += $(node).text();
+    }
+
+    return rstr += "</" + node.nodeName + ">";
+}
+
+$("#showDescription").bind("pagebeforeshow", function(e) {
+	var description = localStorage.getItem("showDescription");
+	$('#descriptionContent p:first').html(description);
+});
+
+$("#itemdetail").bind("pagebeforeshow", function(e) {
+	var mp3URL = localStorage.getItem("enclosureURL");
+	var showTitle = localStorage.getItem("showTitle");
+	
+	var audioMedia = null,
+		audioTimer = null,
+		duration = -1,
+		is_paused = false;
+		
+	$('#showTitle').html(showTitle);
+
+	$("#playaudio").live('tap', function() {    
+        
+		if (audioMedia === null) {
+	        $("#audio_duration").html("0");
+	        $("#audio_position").html("Loading...");
+	        audioMedia = new Media(mp3URL, onSuccess, onError); 
+	        audioMedia.play();
+	    } else {
+	        if (is_paused) {
+	            is_paused = false;
+	            audioMedia.play();
+	        }
+	    }
+		
+		if (audioTimer === null) {
+	        audioTimer = setInterval(function() {
+	            audioMedia.getCurrentPosition(
+	                    function(position) {
+	                        if (position > -1) {
+	                            setAudioPosition(Math.round(position));
+	                            if (duration <= 0) {
+	                                duration = audioMedia.getDuration();                             
+	                                if (duration > 0) {
+	                                    duration = Math.round(duration);
+	                                    $("#audio_duration").html(duration);
+	                                }
+	                            }                                                      
+	                        }
+	                    },
+	                    function(error) {
+	                        console.log("Error getting position=" + error);
+	                        setAudioPosition("Error: " + error);
+	                    }
+	            );
+	        }, 1000);
+	    }
+		
+    });
+	
+	function setAudioPosition(position) {
+	    $("#audio_position").html(position + " sec");
+	}
+	
+	function onSuccess() {
+	    setAudioPosition(duration);
+	    clearInterval(audioTimer);
+	    audioTimer = null;
+	    audioMedia = null;
+	    is_paused = false;
+	    duration = -1;
+	}
+	
+	function onError(error) {
+	    alert('code: '    + error.code    + '\n' + 
+	            'message: ' + error.message + '\n');
+	    clearInterval(audioTimer);
+	    audioTimer = null;
+	    audioMedia = null;
+	    is_paused = false;
+	    setAudioPosition("0");
+	}
+	
+	function pauseAudio() {
+	    if (is_paused) return;
+	    if (audioMedia) {
+	        is_paused = true;
+	        audioMedia.pause();
+	    }
+	}
+	
+	function stopAudio() {
+	    if (audioMedia) {
+	        audioMedia.stop();
+	        audioMedia.release();
+	        audioMedia = null;
+	    }
+	    if (audioTimer) {
+	        clearInterval(audioTimer);
+	        audioTimer = null;
+	    }
+	    
+	    is_paused = false;
+	    duration = 0;
+	}
+
+    $("#pauseaudio").live('tap', function() {
+		pauseAudio();
+    });
+    
+    $("#stopaudio").live('tap', function() { 
+		stopAudio();
+    });
+
+});
+</script>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width;" />
+	<title>Network Status</title>	
+	<script type="text/javascript" src="cordova-2.0.0.js"></script>
+	<script type="text/javascript" src="xui.js"></script>
+    <script type="text/javascript">
+    	
+	var intCheck = 0;
+	var currentType;
+
+	function onLoad() {
+        document.addEventListener("deviceready", onDeviceReady, false);
+    }
+			
+	function onDeviceReady() {
+		document.addEventListener("online", checkConnection, false);
+		document.addEventListener("offline", checkConnection, false);
+		var connCheck = setInterval(function() {
+			checkConnection();
+		}, 1000);
+	}
+	
+	function checkConnection() {
+		var objConnection = navigator.network.connection;
+		var connectionInfo = getConnectionType(objConnection.type);
+		var statusMessage = '<p>' + connectionInfo.message + '</p>';
+				
+		if(currentType != objConnection.type) {
+			intCheck = 0;
+			currentType = objConnection.type;
+			if(connectionInfo.value <= 3) {
+				x$('#speedMessage').html('<p>This application works better over a faster connection.</p>');
+			} else {
+				x$('#speedMessage').html('');
+			}
+		}
+		intCheck = ++intCheck;
+		
+		x$('#statusMessage').html(statusMessage);
+		x$('#count').html('<p>Checked ' + intCheck + ' seconds ago</p>');
+	}
+	
+	function getConnectionType(type) {
+		var connTypes = {};
+		    connTypes[Connection.NONE]     = {
+		    	message: 'No network connection',
+		    	value: 	0
+		    };
+		    connTypes[Connection.UNKNOWN]     = {
+		    	message: 'Unknown connection',
+		    	value: 	1
+		    };
+		    connTypes[Connection.ETHERNET]     = {
+		    	message: 'Ethernet connection',
+		    	value: 	2
+		    };
+		    connTypes[Connection.CELL_2G]     = {
+		    	message: 'Cell 2G connection',
+		    	value: 	3
+		    };
+		    connTypes[Connection.CELL_3G]     = {
+		    	message: 'Cell 3G connection',
+		    	value: 	4
+		    };
+		    connTypes[Connection.CELL_4G]     = {
+		    	message: 'Cell 4G connection',
+		    	value: 	5
+		    };
+		    connTypes[Connection.WIFI]     = {
+		    	message: 'WiFi connection',
+		    	value: 	6
+		    };
+	    return connTypes[type];
+	}
+	
+	</script>
+</head>
+<body onload="onLoad()">
+
+	<h3>Network Status</h3>
+	
+	<div id="holder">
+	
+		<div id="statusMessage"></div>
+		
+		<div id="count"></div>
+		
+	</div>
+	
+	<div id="speedMessage"></div>
+
+</body>
+</html>
+
+<style>
+div#holder {
+	width: 250px;
+	min-height: 60px;
+	margin: 0 auto;
+	position: relative;
+	border: 1px solid #ff0080;
+	border-radius: 10px;
+	background: #ff0080;
+}
+div#holder p {
+	margin: 20px auto;
+	text-align: center;
+	color: #ffffff;
+	font-weight: bold;
+}
+div#speedMessage {
+	width: 250px;
+	margin: 0 auto;
+	position: relative;
+}
+</style>

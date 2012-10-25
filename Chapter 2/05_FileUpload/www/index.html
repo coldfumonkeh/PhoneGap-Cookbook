@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  	<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width;" />
+    <title>Upload File</title>
+	<script type="text/javascript" src="cordova-2.0.0.js"></script>
+    <script type="text/javascript" src="xui.js"></script>
+	<script type="text/javascript">
+	document.addEventListener("deviceready", onDeviceReady, true);
+	
+	function onDeviceReady() {
+	
+		x$("#selectorBtn").touchstart(function(e) {
+			navigator.camera.getPicture(
+				gotPicture,
+				onError,
+				{
+					sourceType:Camera.PictureSourceType.CAMERA, 
+					destinationType:Camera.DestinationType.FILE_URI,
+					quality:50
+				}
+			); 
+		});
+
+	}
+
+	function gotPicture(fileLocation) {
+		x$("#message").html("<p>Uploading your image...</p>");
+	
+		var options = new FileUploadOptions();
+		options.fileKey		=	"file";
+		options.fileName	=	fileLocation.substr(fileLocation.lastIndexOf('/')+1);
+		options.mimeType	=	"image/jpeg";
+		options.chunkedMode	=	false;
+			
+		var fileTransfer = new FileTransfer();
+		fileTransfer.upload(
+			fileLocation, 
+			"http://maxbyod.mattgifford.co.uk/phonegap/upload.cfm", 
+			fileUploaded, 
+			onError, 
+			options
+		);
+	}
+
+	function fileUploaded(result) {
+		x$("#message").html('<p>Upload complete!!<br />Bytes sent: ' + result.bytesSent + '</p>');
+		x$("#returnImage").attr("src", result.response);
+	}
+	
+	function onError(error) {
+		alert("Error: " + JSON.stringify(error));
+	}
+    </script>
+</head>
+<body>
+
+	<button id="selectorBtn">Take Photo</button>
+    
+    <div id="message"></div>
+
+    <img id="returnImage" />
+
+</body>
+</html>

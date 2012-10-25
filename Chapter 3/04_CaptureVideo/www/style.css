@@ -1,0 +1,27 @@
+#record {
+	display: block;
+	padding: .4em .8em;
+	text-decoration: none;
+	text-shadow: 1px 1px 1px rgba(0,0,0,.3);
+	-webkit-transition:.3s -webkit-box-shadow, .3s padding;
+	transition:.3s box-shadow, .3s padding;
+	border-radius: 200px;
+	background: rgba(255,0,0,.6);
+	width: 10em;
+	height: 10em;
+	color: white;
+	position: absolute;
+	top: 25%;
+	left: 25%;
+}
+		
+#record:hover,
+#record:active {	
+	box-shadow: 1px 1px 5px rgba(0,0,0,.3) inset;
+}
+
+#record:active {
+	color: rgba(0,0,0,.1);
+	text-shadow: 1px 1px 0 rgba(0,0,0,.4);
+	box-shadow: 5px 6px 1px rgba(0,0,0,.4) inset;
+}

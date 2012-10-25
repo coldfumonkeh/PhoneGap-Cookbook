@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name="viewport" 
+		content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width;" />
+	<title>Compass</title>
+	<link href="compass_style.css" rel="stylesheet" />
+	<script type="text/javascript" src="cordova-2.0.0.js"></script>
+	<script type="text/javascript" src="xui.js"></script>
+	<script type="text/javascript">
+	// PhoneGap code will go here
+
+	var headingDiv;
+
+	x$(document).on("deviceready", function () {
+		headingDiv = x$("#heading");
+		navigator.compass.getCurrentHeading(onSuccess, onError);
+		navigator.compass.watchHeading(onSuccess, onError, {frequency: 100});
+		
+		// Run after successful transaction
+		// Let's display the compass data
+		function onSuccess(heading) {
+			headingDiv.html(
+				'Heading: ' + heading.magneticHeading + '&#xb0; ' + 
+				convertToText(heading.magneticHeading) + '<br />' + 
+				'True Heading: ' + heading.trueHeading + '<br />' +
+				'Accuracy: ' + heading.headingAccuracy
+			);
+					
+			// Alter the CSS properties to rotate the rose image
+			x$(".rose").css({
+				"-webkit-transform": 
+				"rotate(-" + heading.magneticHeading + "deg)",
+			   "transform": 
+				"rotate(-" + heading.magneticHeading + "deg)"
+			});	
+		}
+	
+		// Run if we face an error 
+		// obtaining the compass data
+		function onError() {
+			headingDiv.html(
+				'There was an error trying to ' + 
+				'locate your current bearing.'
+			);
+		}
+		
+	});
+
+	// Accept the magneticHeading value
+	// and convert into a text representation
+	function convertToText(mh) {
+		var textDirection;
+		if (typeof mh !== "number") {
+			textDirection = ''; 
+		} else if (mh >= 337.5 || (mh >= 0 &&  mh <= 22.5)) {
+			textDirection =  'N'; 
+		} else if (mh >= 22.5 && mh <= 67.5) {
+		   textDirection =  'NE'; 
+		} else if (mh >= 67.5 && mh <= 112.5) {
+		   textDirection =  'E'; 
+		} else if (mh >= 112.5 && mh <= 157.5) {
+		   textDirection =  'SE'; 
+		} else if (mh >= 157.5 && mh <= 202.5) {
+		   textDirection =  'S'; 
+		} else if (mh >= 202.5 && mh <= 247.5) {
+		   textDirection =  'SW'; 
+		} else if (mh >= 247.5 && mh <= 292.5) {
+		   textDirection =  'W'; 
+		} else if (mh >= 292.5 && mh <= 337.5) {
+		   textDirection =  'NW'; 
+		} else {
+			textDirection =  textDirection;
+		}
+		return textDirection;
+	}
+	</script>
+</head>
+<body>
+	<div class="container">
+
+		<img src="images/rose.png" 		
+			class="rose" width="120" height="121" 
+			alt="rose" />
+	
+		<img src="images/compass.png" 	
+			class="compass" width="200" height="200" 
+			alt="compass" />
+
+		<div id="heading"></div>
+
+	</div>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width;" />
+	<title>Sub Menu</title>	
+	<script type="text/javascript" src="cordova-2.0.0.js"></script>
+	<script type="text/javascript" src="xui.js"></script>
+    <script type="text/javascript">
+    	
+	function onLoad() {
+        document.addEventListener("deviceready", onDeviceReady, false);
+    }
+			
+	function onDeviceReady() {
+		document.addEventListener("menubutton", onMenuPress, false);
+		setMenuHandlers();
+	}
+	
+	function onMenuPress() {
+		var menuPosition = x$('#subMenu').getStyle('bottom');
+		if(menuPosition == '-100px') {
+			x$('#subMenu').tween({bottom: '0px' });
+		} else {
+			x$('#subMenu').tween({bottom: '-100px' });
+		}
+	}
+	
+	function setMenuHandlers() {
+		x$('#exit').on('touchstart', function() {
+			navigator.app.exitApp();
+		});
+		x$('#hello').on('touchend', function() {
+			alert('Hello!');
+		});
+		x$('#closeMenu').on('touchend', function() {
+			onMenuPress();
+		});
+		x$('#menuToggle').on('touchend', function() {
+			onMenuPress();
+		});
+	}
+	
+	</script>
+</head>
+<body onload="onLoad()">
+
+	<h2>Menu Display</h2>
+	
+	<button id="menuToggle">Toggle Menu</button>
+
+	<div id="subMenu">
+		<a id="closeMenu"><span>Close Menu</span></a>
+		<a id="hello"><span>Hello</span></a>
+		<a id="exit"><span>Exit Application</span></a>
+	</div>
+
+</body>
+</html>
+
+<style>
+#menuToggle {
+	width: 100%;
+	height: 40px;
+	position: relative;
+	margin: 0 auto;
+	color: #ffffff;
+	background: #ff0080;
+	font-size: 20px;
+}
+#subMenu {
+	position: fixed;
+	bottom: -100px;
+	left: 0px;
+	border-top: 1px solid #555;
+	height: 100px;
+	width: 100%;
+	background: #e5e5e5;
+}
+#subMenu span { 
+	position: relative;
+	margin: 0 auto;
+	top: 40%;
+}
+#subMenu a {
+	width: 29%; 
+	height: 100px;
+	display: block; 
+	float: left; 
+	margin: 0 2% 0 2%;
+	border-left: 1px solid #ccc; 
+	border-right: 1px solid #ccc; 
+	text-align: center;
+}
+</style>

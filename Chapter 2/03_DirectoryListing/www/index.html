@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  	<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width;" />
+    <title>Directory Reader</title>
+	<link rel="stylesheet" href="jquery/jquery.mobile-1.1.1.min.css" />
+	<script src="jquery/jquery-1.8.0.min.js"></script>
+	<script src="jquery/jquery.mobile-1.1.1.min.js"></script>
+	<script type="text/javascript" src="cordova-2.0.0.js"></script>
+    <script type="text/javascript">
+
+    document.addEventListener("deviceready", onDeviceReady, false);
+	
+	function onDeviceReady(){
+		window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, onFileSystemSuccess, fail);
+	}
+
+	function onFileSystemSuccess(fileSystem) {
+		// Create some test files
+		fileSystem.root.getDirectory("myDirectory", { create: true, exclusive: false }, null,fail);
+		fileSystem.root.getFile("readthis.txt", { create: true, exclusive: false }, null,fail);
+		
+		var directoryReader = fileSystem.root.createReader();
+		// Get a list of all the entries in the directory
+		directoryReader.readEntries(success,fail);
+    }
+	
+	function success(entries) {
+	    var i;
+		var objectType;
+	    for (i=0; i<entries.length; i++) {
+			if(entries[i].isDirectory == true) {
+				objectType = 'Directory';
+			} else {
+				objectType = 'File';
+			}
+			$('#directoryList').append('<li><h3>' + entries[i].name + '</h3><p>' + entries[i].toURI() + '</p><p class="ui-li-aside">Type: <strong>' + objectType + '</strong></p></li>');
+	    }
+		$('#directoryList').listview("refresh");
+	}
+
+	function fail(error) {
+	    alert("Failed to list directory contents: " + error.code);
+	}
+    </script>
+</head>
+<body>
+
+	<div data-role="page">
+
+		<div data-role="header">
+			<h2>Directory Reader</h2>
+		</div>
+	
+		<div data-role="content">	
+			<ul id="directoryList" data-role="listview" data-inset="true">
+				
+			</ul>		
+		</div>
+
+	</div>
+
+</body>
+</html>

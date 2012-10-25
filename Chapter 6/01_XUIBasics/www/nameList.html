@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width;" />
+	<title>XUI</title>	
+	<script type="text/javascript" src="xui.js"></script>
+    <script type="text/javascript">
+    	
+	x$(window).on('load', onLoad);
+		
+    function onLoad() {
+
+		var strMessage = '';
+		var allNames = x$('li');
+
+		strMessage += '<p>There are ' + allNames.length + ' names in total</p>'; 
+		
+		var allFamily = x$('#family').find('li');
+		var maleFamily = allFamily.has('.male');
+		var femaleFamily = allFamily.has('.female');
+		
+		strMessage += '<p>' + allFamily.length + ' family members are listed:';
+		strMessage += '<ul><li id="maleFamily">' + maleFamily.length + ' male</li><li id="femaleFamily">' + femaleFamily.length + ' female</li></ul></p>';
+		
+		var allFriends = x$('#friends').find('li');
+		var maleFriends = allFriends.has('.male');
+		var femaleFriends = allFriends.not('.male');
+		
+		strMessage += '<p>' + allFriends.length + ' friends are listed:';
+		strMessage += '<ul><li id="maleFriends">' + maleFriends.length + ' male</li><li id="femaleFriends">' + femaleFriends.length + ' female</li></ul></p>';
+		
+		x$('#output').html(strMessage);
+		
+		xui.extend(nameFunctions);
+		
+		x$('#maleFamily').generateList(maleFamily);
+		x$('#femaleFamily').generateList(femaleFamily);
+		x$('#maleFriends').generateList(maleFriends);
+		x$('#femaleFriends').generateList(femaleFriends);
+		
+    }
+	
+	var nameFunctions = {
+		generateList: function(array) { 
+			var list = '<ul>';
+			
+			array.each(function(element, index, xui) {
+				list+= element.outerHTML;
+			});
+			
+			list+= '</ul>';
+
+			this.bottom(list);
+		}
+	}
+
+	</script>
+</head>
+<body>
+
+	<ul id="family">
+		<li class="male">Ted</li>
+		<li class="female">Molly</li>
+		<li class="female">Cate</li>
+		<li class="female">Jean</li>
+		<li class="male">George</li>
+	</ul>
+	
+	<ul id="friends">
+		<li class="male">Steve</li>
+		<li class="female">Pip</li>
+		<li class="male">Dave</li>
+		<li class="male">Scott</li>
+	</ul>
+	
+	
+	<div id="output"></div>
+
+</body>
+</html>

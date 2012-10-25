@@ -1,0 +1,85 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+  	<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width;" />
+    <title>Image Effects</title>
+	<script src="jquery/jquery-1.8.0.min.js"></script>
+	<script type="text/javascript" src="cordova-2.0.0.js"></script>
+	<script type="text/javascript" src="rgb.js"></script>
+    <script type="text/javascript">
+	document.addEventListener("deviceready", onDeviceReady, true);
+     
+    var canvas,
+    	context,
+    	image,
+    	imgObj,
+    	noise = 20;
+    
+	function onDeviceReady() {
+		reset();
+		
+		$('#grayscale').bind('touchstart', function() {
+			grayscaleImage();
+		});
+		
+		$('#sepia').bind('touchstart', function() {
+			processSepia();
+		});
+		
+		$('#reset').bind('touchstart', function() {
+			reset();
+		});
+		
+	}
+	
+	function grayscaleImage() {
+		var imageData = context.getImageData(0, 0, 300, 300);
+		for (var i = 0, n = imageData.data.length; i < n; i += 4) {
+		var grayscale = imageData.data[i] * .3 + imageData.data[i+1] * .59 + imageData.data[i+2] * .11;
+		imageData.data[i] = grayscale;
+		imageData.data[i+1] = grayscale;
+		imageData.data[i+2] = grayscale;
+		}
+		context.putImageData(imageData, 0, 0);
+	}
+	
+	function processSepia() {
+	   var imageData = context.getImageData(0,0,canvas.width,canvas.height);
+	    for (var i=0; i < imageData.data.length; i+=4) {
+	        imageData.data[i] = r[imageData.data[i]];
+	        imageData.data[i+1] = g[imageData.data[i+1]];
+	        imageData.data[i+2] = b[imageData.data[i+2]];
+	
+	        if (noise > 0) {
+	            var noise = Math.round(noise - Math.random() * noise);
+	            for(var j=0; j<3; j++){
+	                var iPN = noise + imageData.data[i+j];
+	                imageData.data[i+j] = (iPN > 255) ? 255 : iPN;
+	            }
+	        }
+	    }
+	    context.putImageData(imageData, 0, 0);
+	};
+	
+	function reset() {
+		canvas = document.getElementById('myCanvas');
+		context = canvas.getContext("2d");
+		image = document.getElementById('sourceImage');
+		
+		context.drawImage(image, 0, 0);
+	}
+	</script>
+</head>
+<body>
+
+<button id="grayscale">Grayscale</button>
+<button id="sepia">Sepia</button>
+<button id="reset">Reset</button><br />
+
+<img id="sourceImage" src="awesome.jpg" alt="source image" height="150" width="150" />
+
+<canvas id="myCanvas" width="300" height="300"></canvas>
+
+
+</body>
+</html>

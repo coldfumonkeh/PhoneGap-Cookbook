@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  	<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width;" />
+    <title>Photo Finder</title>
+	<script src="jquery/jquery-1.8.0.min.js"></script>
+	<script type="text/javascript" src="cordova-2.0.0.js"></script>
+    <script type="text/javascript">
+	document.addEventListener("deviceready",onDeviceReady,false);
+
+    function onDeviceReady() {        
+        $('.photo').bind('touchstart', function() {
+        	switch($(this).attr('id')) {
+        		case 'cameraPhoto':
+        			capturePhoto();
+        		break;
+        		case 'libraryPhoto':
+        			getPhoto();
+        		break;
+        	}
+        });
+    }
+
+    function capturePhoto() {
+      navigator.camera.getPicture(onSuccess, onFail, 
+      	{ 
+      		quality: 100, 
+      		targetWidth: 250, 
+      		targetHeight: 250 
+      	}
+      );
+    }
+
+	function getPhoto() {
+	  navigator.camera.getPicture(onSuccess, onFail, 
+	  	{ 
+	  		quality: 100, 
+	  		destinationType: Camera.DestinationType.FILE_URI, 
+	  		sourceType: Camera.PictureSourceType.PHOTOLIBRARY,
+	  		targetWidth: 250,
+	  		targetHeight: 250
+	  	}
+	  );
+	}
+    
+	function onSuccess(imageURI) {
+		$('#image').attr('src', imageURI);
+		$('#message').html('Image location: ' + imageURI);
+	}
+	
+	function onFail(message) {
+	  $('#message').html(message);
+	}
+	
+	</script>
+</head>
+<body>
+
+	<button class="photo" id="cameraPhoto">Take New Photo</button><br />
+    <button class="photo" id="libraryPhoto">Select From Library</button><br />
+    <div id="message"></div><br />
+    <img id="image" />
+
+</body>
+</html>

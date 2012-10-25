@@ -1,0 +1,103 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+  	<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width;" />
+    <title>Audio Recorder</title>
+	<link rel="stylesheet" href="style.css" />
+	<link type="text/css" href="jquery/css/smoothness/jquery-ui-1.8.23.custom.css" rel="stylesheet" /> 
+    <script type="text/javascript" src="jquery/jquery-1.8.0.min.js"></script>
+    <script type="text/javascript" src="jquery/jquery-ui-1.8.23.custom.min.js"></script>
+	<script type="text/javascript" src="cordova-2.0.0.js"></script>
+    <script type="text/javascript">
+	
+	var maxTime = 10,
+            countdownInt = 3,
+            src,
+            audioRecording,
+            stopRecording;
+        
+        document.addEventListener("deviceready", onDeviceReady, false);
+    
+        function onDeviceReady() {
+            recordPrepare();
+        }
+        
+        function recordPrepare() {
+            $('#record').unbind();
+            $('#record').html('Start recording');
+            $('#record').bind('touchstart', function() {
+               recordAudio();
+            });
+        }
+
+    function recordAudio() {
+        
+        $('#record').unbind();
+        $('#record').html('Stop recording');
+        $('#record').bind('touchstart', function() {
+            stopRecording();
+        });
+        
+		src = "new_test_recording_" + Math.round(new Date().getTime()/1000) + ".mp3";
+		
+        audioRecording = new Media(src, onSuccess, onError);
+        
+        var startCountdown = setInterval(function() {
+            
+            $('#message').html('Recording will start in ' + countdownInt + ' seconds...');
+            countdownInt = countdownInt -1;
+            
+            if(countdownInt <= 0) {
+                countdownInt = 3;
+                clearInterval(startCountdown);
+                audioRecording.startRecord();
+        
+                var recTime = 0;
+                    recInterval = setInterval(function() {
+                    recTime = recTime + 1;
+    
+                    $('#message').html(Math.round(maxTime - recTime) + ' seconds remaining...');
+    
+                    var progPerc = 100-((100/maxTime) * recTime);
+                    setProgress(progPerc);
+                    
+                    if (recTime >= maxTime) {
+                        stopRecording();
+                    }
+                }, 1000);
+            }
+        }, 1000);
+    }
+        
+        function setProgress(progress) {
+            $("#progressbar").progressbar({
+                    value: progress
+            });
+        }
+    
+        function stopRecording() {
+            clearInterval(recInterval);
+            audioRecording.stopRecord();
+            setProgress(0);
+            recordPrepare();
+        }
+
+        function onSuccess() {
+            $('#message').html('Audio file successfully created:<br />' + src);
+        }
+            
+        function onError(error) {
+            $('#message').html('code: '    + error.code    + '\n' + 
+                  'message: ' + error.message + '\n');
+        }
+
+        </script>
+</head>
+<body>
+
+    <div id="progressbar"></div>
+    <div id="message"></div>
+    <button id="record"></button>
+
+</body>
+</html>

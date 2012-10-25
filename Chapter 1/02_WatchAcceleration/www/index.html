@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width;" />
+	<title>Accelerometer Data</title>
+
+	<script type="text/javascript" 
+			src="cordova-2.0.0.js"></script>
+
+	<!-- Add PhoneGap script here -->
+	<script type="text/javascript">
+	
+	// The watch id variable is set as a 
+		// reference to the current 'watchAcceleration'
+		var watchID = null;
+	
+	
+		// Set the event listener to run 
+	// when the device is ready
+		document.addEventListener(
+				"deviceready", onDeviceReady, false);
+
+		// The device is ready so let's 
+	// start watching the acceleration
+	function onDeviceReady() {
+		startWatch();
+	}
+
+		// Watch the acceleration at regular 
+	// intervals as set by the frequency
+	function startWatch() {
+	
+		// Set the frequency of updates 
+		// from the acceleration
+		var options = { frequency: 3000 };
+	
+		// Set attributes for control buttons
+		document.getElementById('startBtn').disabled 	= true;
+		document.getElementById('stopBtn').disabled 		= false;
+	
+		// Assign watchAcceleration to the watchID variable
+		// and pass through the options array
+		watchID = navigator.accelerometer.watchAcceleration(
+							onSuccess, onError, options);
+	}
+
+		// Stop watching the acceleration
+	function stopWatch() {
+	
+		if (watchID) {
+			navigator.accelerometer.clearWatch(watchID);
+	      watchID = null;
+				
+			var element = 
+				document.getElementById('accelerometerData');
+	      
+			element.innerHTML = 
+				'No longer watching your acceleration.'
+				
+			// Set attributes for control buttons
+			document.getElementById('startBtn').disabled 	= false;
+			document.getElementById('stopBtn').disabled 		= true;
+				
+		}
+	
+	}
+
+
+		// Run after successful transaction
+	// Let's display the accelerometer data
+	function onSuccess(acceleration) {
+		var element = document.getElementById('accelerometerData');
+		element.innerHTML = 
+			'Acceleration X: ' + acceleration.x + '<br />' +
+			'Acceleration Y: ' + acceleration.y + '<br />' +
+	      'Acceleration Z: ' + acceleration.z + '<br />' +
+	      'Timestamp: '      + acceleration.timestamp + '<br />';
+	}
+
+
+		// Run if we face an error 
+	// obtaining the accelerometer data
+	function onError() {
+		// Handle any errors we may face
+		var element = document.getElementById('accelerometerData');
+	    element.innerHTML = 
+			'Sorry, I was unable to access the acceleration data.';
+	}
+
+
+	</script>
+
+</head>
+<body>
+
+	<h1>Accelerometer Data</h1>
+
+	<button id="startBtn" 
+					onclick="startWatch()">start</button>
+	
+		<button id="stopBtn" 	
+					onclick="stopWatch()">stop</button>
+
+
+	<div id="accelerometerData">Obtaining data...</div>
+
+</body>
+</html>

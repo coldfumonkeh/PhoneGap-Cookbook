@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  	<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width;" />
+    <title>Audio Capture</title>
+	<link rel="stylesheet" href="style.css" />
+	<script src="jquery/jquery-1.8.0.min.js"></script>
+	<script type="text/javascript" src="cordova-2.0.0.js"></script>
+    <script type="text/javascript">
+	document.addEventListener("deviceready", onDeviceReady, true);
+    
+    var audioCapture = '';
+    
+    function onDeviceReady() {
+        audioCapture = navigator.device.capture;
+        
+        $('#record').bind('touchstart', function() {
+           getAudio(); 
+        });
+    }
+    
+    function getAudio() {
+        audioCapture.captureAudio(onSuccess, onError, {limit: 1});
+    }
+    
+    function onSuccess(audioObject) {
+        var i, output = '';
+        for (i = 0; i < audioObject.length; i ++) {
+            output += 'Name: ' + audioObject[i].name + '<br />' + 
+                'Full Path: ' + audioObject[i].fullPath + '<br />' +
+                'Type: ' + audioObject[i].type + '<br />' +
+                'Created: ' + new Date(audioObject[i].lastModifiedDate) + '<br />' +
+                'Size: ' + audioObject[i].size + '<br />========';
+        }
+        $('#record').before(output);
+    }
+    
+    function onError(error) {
+        var errReason;
+        switch(error.code) {
+            case 0:
+                errReason = 'The microphone failed to capture sound.';
+            break;
+            case 1:
+                errReason = 'The audio capture application is currently busy with another request.';
+            break;
+            case 2:
+                errReason = 'An invalid parameter was sent to the API.';
+            break;
+            case 3:
+                errReason = 'You left the audio capture application without recording anything.';
+            break;
+            case 4:
+                errReason = 'Your device does not support the audio capture request.';
+            break;
+        }
+        alert('The following error occurred: ' + errReason);
+    }
+    
+    </script>
+</head>
+<body>
+    
+    <button id="record">capture audio</button>
+
+</body>
+</html>

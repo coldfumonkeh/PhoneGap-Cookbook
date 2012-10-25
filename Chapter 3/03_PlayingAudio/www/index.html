@@ -1,0 +1,155 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+  	<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width;" />
+    <title>Audio Player</title>
+	<link rel="stylesheet" href="jquery/jquery.mobile-1.1.1.min.css" type="text/css">
+    <script src="jquery/jquery-1.8.0.min.js"></script>
+    <script type="text/javascript" src="jquery/jquery.mobile-1.1.1.min.js"></script>
+	<script type="text/javascript" src="cordova-2.0.0.js"></script>
+    <script type="text/javascript">
+	
+	document.addEventListener("deviceready", onDeviceReady, true);
+	 
+	var audioMedia = null,
+		audioTimer = null,
+		duration = -1,
+		is_paused = false;
+     
+	function onDeviceReady() {
+	
+		$("#playLocalAudio").bind('touchstart', function() {
+		            
+			stopAudio();
+			var srcLocal = '/android_asset/www/CFHour_Intro.mp3';
+			playAudio(srcLocal);
+			
+		});
+		
+		$("#playRemoteAudio").bind('touchstart', function() {
+		    
+			stopAudio();
+			var srcRemote = 'http://traffic.libsyn.com/cfhour/Show_138_-_ESAPI_StackOverflow_and_Community.mp3';
+			playAudio(srcRemote);
+			
+		});
+		
+		$("#pauseaudio").bind('touchstart', function() {
+		    pauseAudio();
+		});
+		
+		$("#stopaudio").bind('touchstart', function() {
+		    stopAudio();
+		});
+	}
+	
+	function playAudio(src) {
+	        
+	    if (audioMedia === null) {
+	        $("#mediaDuration").html("0");
+	        $("#audioPosition").html("Loading...");
+	        audioMedia = new Media(src, onSuccess, onError);       
+	        audioMedia.play();
+	    } else {
+	        if (is_paused) {
+	            is_paused = false;
+	            audioMedia.play();
+	        }
+	    }
+	
+	    if (audioTimer === null) {
+	        audioTimer = setInterval(function() {
+	            audioMedia.getCurrentPosition(
+	                    function(position) {
+	                        if (position > -1) {
+	                            setAudioPosition(Math.round(position));
+	                            if (duration <= 0) {
+	                                duration = audioMedia.getDuration();                             
+	                                if (duration > 0) {
+	                                    duration = Math.round(duration);
+	                                    $("#mediaDuration").html(duration);
+	                                }
+	                            }                                                      
+	                        }
+	                    },
+	                    function(error) {
+	                        console.log("Error getting position=" + error);
+	                        setAudioPosition("Error: " + error);
+	                    }
+	            );
+	        }, 1000);
+	    }
+	}
+      
+
+	function setAudioPosition(position) {
+	    $("#audioPosition").html(position + " sec");
+	}
+	
+	function onSuccess() {
+	    setAudioPosition(duration);
+	    clearInterval(audioTimer);
+	    audioTimer = null;
+	    audioMedia = null;
+	    is_paused = false;
+	    duration = -1;
+	}
+	
+	function onError(error) {
+	    alert('code: '    + error.code    + '\n' + 
+	            'message: ' + error.message + '\n');
+	    clearInterval(audioTimer);
+	    audioTimer = null;
+	    audioMedia = null;
+	    is_paused = false;
+	    setAudioPosition("0");
+	}
+	
+	function pauseAudio() {
+	    if (is_paused) return;
+	    if (audioMedia) {
+	        is_paused = true;
+	        audioMedia.pause();
+	    }
+	}
+	
+	function stopAudio() {
+	    if (audioMedia) {
+	        audioMedia.stop();
+	        audioMedia.release();
+	        audioMedia = null;
+	    }
+	    if (audioTimer) {
+	        clearInterval(audioTimer);
+	        audioTimer = null;
+	    }
+	    
+	    is_paused = false;
+	    duration = 0;
+	}
+
+      </script>
+</head>
+<body>
+ 
+<div data-role="page" id="page-home">
+    <div data-role="header">
+        <h1>PhoneGap Audio Player</h1>
+    </div>
+    
+    <div data-role="content">
+        
+        <div data-role="button" id="playLocalAudio">Play Local Audio</div>
+        <div data-role="button" id="playRemoteAudio">Play Remote Audio</div>
+        <div data-role="button" id="pauseaudio">Pause Audio</div>
+        <div data-role="button" id="stopaudio">Stop Audio</div>    
+    
+        <div class="ui-grid-a">
+            <div class="ui-block-a"> Current: <span id="audioPosition">0 sec</span></div>
+            <div class="ui-block-b">Total: <span id="mediaDuration">0</span> sec</div>
+        </div>
+
+	</div>
+</div>
+</body>
+</html>

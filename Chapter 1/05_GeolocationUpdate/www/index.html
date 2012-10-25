@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width;" />
+	<title>Geolocation Data</title>
+	<script type="text/javascript" src="cordova-2.0.0.js"></script>
+	<script type="text/javascript">
+
+		// The watch id variable is set as a reference to the current 'watchPosition'
+		var watchID = null;
+
+		// Set the event listener to run when the device is ready
+		document.addEventListener("deviceready", onDeviceReady, false);
+
+		// The device is ready so let's start watching the position
+		function onDeviceReady() {  
+			startWatch();
+		}
+
+		function startWatch() {
+			// Create the options to send through
+			var options = { enableHighAccuracy: true };
+			// Watch the position and update when a change has been detected
+			watchID = navigator.geolocation.watchPosition(onSuccess, onError, options);
+		}
+
+		// Run after successful transaction. Let's display the position data
+		function onSuccess(position) {
+        
+			var timestamp, latitude, longitude, accuracy;
+			var element = document.getElementById('geolocationData');
+		
+			timestamp	=	new Date(position.timestamp);
+			latitude 	= 	position.coords.latitude;
+			longitude	=	position.coords.longitude;
+			accuracy		=	position.coords.accuracy;
+		
+			element.innerHTML +=
+					'<hr />' +
+					'Timestamp: ' 	+ timestamp + '<br />' +
+					'Latitude: ' 	+ latitude 	+ '<br />' +
+					'Longitude: ' 	+ longitude + '<br />' +
+					'Accuracy: ' 	+ accuracy 	+ '<br />';
+		}
+
+		// Run if we face an error obtaining the position data
+		function onError(error) {
+		        
+			var errString	=	'';
+						
+			// Check to see if we have received an error code	  
+			if(error.code) {
+				// If we have, handle it by case
+				switch(error.code)
+				{
+					case 1: // PERMISSION_DENIED
+						errString	=	
+							'Unable to obtain the location information ' + 
+							'because the device does not have permission '+
+							'to the use that service.';
+					break;
+					case 2: // POSITION_UNAVAILABLE
+						errString	=	
+							'Unable to obtain the location information ' +
+							'because the device location could not be ' +
+							'determined.';
+					break;
+					case 3: // TIMEOUT
+						errString	=	
+							'Unable to obtain the location within the ' +
+							'specified time allocation.';
+					break;
+					default: // UNKOWN_ERROR
+						errString	=	
+							'Unable to obtain the location of the ' +
+							'device to an unknown error.';
+					break;
+				}
+					  
+			}
+					  
+			// Handle any errors we may face
+			var element = document.getElementById('geolocationData');
+		   element.innerHTML = errString;
+		
+		}
+	</script>
+</head>
+<body>
+
+	<h1>Geolocation Data</h1>
+	<div id="geolocationData">Obtaining data...</div>
+
+</body>
+</html>

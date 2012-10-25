@@ -1,0 +1,37 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta name="viewport" content="width=320; user-scalable=no" />
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <title>My Plugin Application</title>
+
+	  <script type="text/javascript" src="cordova-2.0.0.js"></script>
+	  <script type="text/javascript" src="MyPlugin.js"></script>
+	  <script type="text/javascript" >
+      
+        var onDeviceReady = function() {
+            document.getElementById("devready").innerHTML = "OnDeviceReady fired.";
+			
+			window.plugins.MyPlugin.greeting(
+				"My First Plugin", 
+				function(echoValue) {
+					alert(echoValue);
+				}
+			);
+			
+        };
+
+        function init() {
+            document.addEventListener("deviceready", onDeviceReady, true);
+        }
+		
+	</script>
+</head>
+<body onload="init();" id="stage" class="theme">
+	<h2>My Plugin App</h2>
+  	<p>Native Android Plugins.</p>
+	<p>
+    <span id="devready">onDeviceReady not fired.</span>
+    </p>
+  </body>
+</html>

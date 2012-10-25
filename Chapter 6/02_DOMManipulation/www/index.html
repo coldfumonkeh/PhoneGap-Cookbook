@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width;" />
+	<title>XUI</title>	
+	<script type="text/javascript" src="xui.js"></script>
+	<script type="text/javascript" charset="utf-8" src="cordova-2.0.0.js"></script>
+    <script type="text/javascript">
+    	
+	x$(window).on('load', onLoad);
+		
+    var textContent = {
+		top: '<div id="top">Top Context</div>',
+		inner: '<p>Inner context</p>',
+		bottom: '<div id="bottom">Bottom Context</div>',
+		after: '<p>DOM Manipulation is easy with XUI!</p>'
+	};
+
+	function onLoad() {		
+		
+		document.addEventListener("deviceready", onDeviceReady, false);
+    }
+	
+	function onDeviceReady() {
+		
+		x$('#content').before('<h1>XUI DOM Manipulation</h2>');
+		
+		x$('button').on('click', function(e) {
+			x$('#content').html(this.id, textContent[this.id]);
+		});
+			
+	}
+
+	</script>
+</head>
+<body>
+	
+	<button id="inner">Inner</button>
+	<button id="top">Top</button>
+	<button id="bottom">Bottom</button>
+	<button id="after">After</button>
+
+	<div id="content"></div>
+
+</body>
+</html>
+<style>
+	div#content { border: 2px solid #e5e5e5; }
+	div#top { background: #ff0000; color: #fff; }
+	div#bottom { background: #ffff00; color: #000; }
+</style>

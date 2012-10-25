@@ -1,0 +1,26 @@
+.container {
+	position: relative;
+	margin: 0 auto;
+	width: 200px;
+	overflow: hidden;
+}
+
+#heading {
+	position: relative;
+	font-size: 18px;
+	font-weight: 200;
+	text-shadow: 0 -1px 0 #eee;
+	margin: 20px auto 20px auto;
+	color: #111;
+	text-align: center;
+}
+.compass {
+	padding-top: 12px;
+}
+.rose {
+	position: absolute;
+	top: 53px;
+	left: 40px;
+	width: 120px;
+	height: 121px;
+}

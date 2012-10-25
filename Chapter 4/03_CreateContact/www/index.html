@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width;" />
+	<title>My Contacts</title>
+	<link rel="stylesheet" href="jquery/jquery.mobile-1.1.1.min.css" type="text/css" />
+    <script src="jquery/jquery-1.8.0.min.js"></script>
+    <script type="text/javascript" src="jquery/jquery.mobile-1.1.1.min.js"></script>	
+	<script type="text/javascript" src="cordova-2.0.0.js"></script>
+    <script type="text/javascript">
+	document.addEventListener("deviceready", onDeviceReady, false);
+
+	var localStorage	=	window.localStorage;
+	var contactInfo;
+	
+	$(document).on('click', '#contactList li.contact_list_item', function(){
+		var selectedID = $(this).attr('id');
+		getContactByID(selectedID);
+	});
+	
+	$(document).bind("pagechange", onPageChange);
+	
+	function onPageChange(event, data) {
+		var toPageId = data.toPage.attr("id");
+		
+		switch (toPageId) {
+			
+			case 'contacts-home':
+				
+				$('#contactList').html('');
+				getAllContacts();
+				
+			break;
+			
+            case 'contact-info':
+            
+            	clearValues();
+  
+  				$('#contact_header h1').html(contactInfo.name.formatted);
+ 				$('#givenName').val(contactInfo.name.givenName);
+				$('#familyName').val(contactInfo.name.familyName);
+				$('#phone').val(contactInfo.phoneNumbers[0].value);
+				$('#email').val(contactInfo.emails[0].value);
+            	
+        	break;
+			
+			case 'contact-add':
+                        	
+            	$('#saveBtn').bind('touchstart',function(){
+            	
+            		$('#displayName').val(
+            			$('#new_contact_form #givenName').val() + 
+            			' ' + $('#new_contact_form #familyName').val()
+            		);
+            	
+					var arrContactInfo = $('#new_contact_form').serializeArray();
+					
+					var phoneNumbers = new Array();
+					var emails = new Array();
+					
+					var contactInfo = '{';
+					
+					for(var i=0; i<arrContactInfo.length; i++) {
+						switch (arrContactInfo[i].name) {
+							case 'phone':
+								if(arrContactInfo[i].value) {
+									phoneNumbers[0] = new ContactField('mobile', arrContactInfo[i].value, true);
+								}
+							break;
+							case 'email':
+								if(arrContactInfo[i].value) {
+									emails[0] = new ContactField('work', arrContactInfo[i].value, true);
+								}
+							break;
+							default:
+								contactInfo += '"' + arrContactInfo[i].name + '" : "' + arrContactInfo[i].value + '"';
+								if(i < arrContactInfo.length-1) { contactInfo += ', ' }
+						}
+					}
+					
+					contactInfo += '}';
+					
+					var newContact = navigator.contacts.create(JSON.parse(contactInfo));
+					
+					newContact.phoneNumbers = phoneNumbers;
+					newContact.emails = emails;
+					
+					newContact.save(onSaveSuccess, onError);
+					
+				});
+				
+        	break;
+			
+        }
+
+	}
+	
+	function onSaveSuccess(contact) {
+		$.mobile.changePage($('#contacts-home'));
+		$('#contactList').listview("refresh");
+	}
+	
+	function clearValues() {
+		$('input[type=text]').each(function() {
+    		$('#' + this.id + '').val('');
+    	});
+	}
+	
+	function onDeviceReady() {
+		getAllContacts();
+	}
+	
+	function getContactByID(contactID) {
+		contactInfo = JSON.parse(localStorage.getItem(contactID));
+		$.mobile.changePage($('#contact-info'));
+	}
+	
+	function getAllContacts() {
+		var options = new ContactFindOptions();
+		options.filter = "";
+		options.multiple = true;
+		var fields = ["name", "phoneNumbers", "birthday", "emails"];
+		navigator.contacts.find(fields, onAllSuccess, onError, options);
+	}
+	
+	function alphabeticalSort(a, b) {
+	     if (a.name.formatted < b.name.formatted){
+	        return -1;
+	     }else if (a.name.formatted > b.name.formatted){
+	       return  1;
+	     }else{
+	       return 0;
+	     }
+	}
+	
+	function onAllSuccess(contacts) {
+			
+		if(contacts.length) {
+	
+            var arrContactDetails = new Array();
+            for(var i=0; i<contacts.length; ++i){
+                  if(contacts[i].name){
+                        arrContactDetails.push(contacts[i]);
+                  }
+            }
+
+			arrContactDetails.sort(alphabeticalSort);
+            
+            var alphaHeader = arrContactDetails[0].name.formatted[0];
+            for(var i=0; i<arrContactDetails.length; ++i) {
+            	var contactObject = arrContactDetails[i];
+                if( alphaHeader != contactObject.name.formatted[0] ) {
+                	alphaHeader = contactObject.name.formatted[0];
+                    $('#contactList').append('<li data-role="list-divider">' + alphaHeader + '</li>');
+                    $('#contactList').append('<li class="contact_list_item" id="' + contactObject.id + '"><a href="#contact-info">' + contactObject.name.formatted + ' (' + contactObject.id + ')</a></li>');
+                } else {
+                    if( i == 0 ) {
+                    	$('#contactList').append('<li data-role="list-divider">' + alphaHeader + '</li>');
+                	}
+                	$('#contactList').append('<li class="contact_list_item" id="' + contactObject.id + '"><a href="#contact-info">' + contactObject.name.formatted + ' (' + contactObject.id + ')</a></li>');
+                }
+				
+            	localStorage.setItem(contactObject.id,JSON.stringify(contactObject));
+				
+            }
+	    
+	    } else {
+	    	$('#contactList').append('<li><h3>Sorry, no contacts were found</h3></li>');
+	    }
+	    
+	    $('#contactList').listview("refresh");
+	}
+	
+	function onError(error) {
+		alert('An error has occurred: ' + error.code);
+	}
+	
+	</script>
+</head>
+<body>
+
+<div data-role="page" id="contacts-home">
+
+    <div data-role="header">
+        <h1>My Contacts</h1>
+		<a href="#contact-add" id="back" data-icon="add">Add</a>
+    </div>
+    
+    <div data-role="content">
+        
+		<ul id="contactList" data-role="listview" data-inset="true">
+			
+		</ul>
+
+	</div>
+	
+</div>
+
+<div data-role="page" id="contact-info">
+
+    <div id="contact_header" data-role="header">
+    	<a href="#contacts-home" id="back" data-icon="back" 
+    		data-direction="reverse">Back</a>
+        <h1></h1>
+    </div>
+    
+	<div id="contact_content" data-role="content">
+	        
+	   <div data-role="fieldcontain">
+			<label for="givenName">First Name:</label>
+			<input type="text" name="givenName" id="givenName" disabled />
+		</div>
+		<div data-role="fieldcontain">
+			<label for="familyName">Last Name:</label>
+			<input type="text" name="familyName" id="familyName" disabled />
+		</div>
+		<div data-role="fieldcontain">
+			<label for="phone">Phone:</label>
+			<input type="text" name="phone" id="phone" disabled />
+		</div>
+		<div data-role="fieldcontain">
+			<label for="email">Email:</label>
+			<input type="text" name="email" id="email" disabled />
+		</div>
+	
+	</div>
+	
+</div>
+
+<div data-role="page" id="contact-add">
+
+    <div data-role="header">
+    	<a href="#contacts-home" id="back" data-icon="back" data-direction="reverse">Back</a>
+        <h1>Add Contact</h1>
+    </div>
+    
+	<div data-role="content">
+	
+		<form id="new_contact_form">  
+		 
+			<div data-role="fieldcontain">
+				<label for="givenName">First Name:</label>
+				<input type="text" name="givenName" id="givenName" />
+			</div>
+			
+			<div data-role="fieldcontain">
+				<label for="familyName">Last Name:</label>
+				<input type="text" name="familyName" id="familyName" />
+			</div>
+		
+			<div data-role="fieldcontain">
+				<label for="phone">Phone:</label>
+				<input type="tel" name="phone" id="phone" />
+			</div>
+			
+			<div data-role="fieldcontain">
+				<label for="email">Email:</label>
+				<input type="email" name="email" id="email" />
+			</div>
+			
+			<div data-role="fieldcontain">
+				<input type="button" name="saveBtn" id="saveBtn" value="Save Contact" />
+				<input type="hidden" name="displayName" id="displayName" />
+			</div>
+		
+		</form>
+
+	</div>
+	
+</div>
+
+
+</body>
+</html>

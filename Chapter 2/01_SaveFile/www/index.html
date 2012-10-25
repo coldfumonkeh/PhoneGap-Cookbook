@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  	<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width;" />
+    <title>File Download</title>
+	<script type="text/javascript" src="xui.js"></script>
+	<script type="text/javascript" src="cordova-2.0.0.js"></script>
+    <script type="text/javascript" >
+
+	var downloadDirectory;
+
+	document.addEventListener("deviceready", onDeviceReady, true);
+	
+	function onDeviceReady() {
+	    window.requestFileSystem(
+			LocalFileSystem.PERSISTENT, 
+			0, 
+			onFileSystemSuccess, 
+			null
+		);
+		
+		x$('#download_btn').on( 'click', function(e) {
+		    download();
+		});
+	}
+	
+	function onFileSystemSuccess(fileSystem) {
+		fileSystem.root.getDirectory('my_downloads',{create:true},
+			function(dir) {
+				downloadDirectory = dir;
+			},fail);
+	}
+	
+	function fail(error) {
+    	x$('#message').html('We encountered a problem: ' + error.code);
+	}
+
+	function download() {
+		var fileURL = document.getElementById('file_url').value;
+		var localFileName = getFilename(fileURL);
+		
+		x$('#message').html('Downloading ' + localFileName);
+		
+		var fileTransfer = new FileTransfer();
+		fileTransfer.download(fileURL, downloadDirectory.fullPath + '/' + localFileName, 
+			function(entry){
+				x$('#message').html('Download complete. File saved to: ' + entry.fullPath);
+			}, 
+			function(error){
+				alert("Download error source " + error.source);
+			}
+		);
+	}
+	
+	// Obtain the filename
+	function getFilename(url) {
+	   if (url) {
+	      var m = url.toString().match(/.*\/(.+?)\./);
+	      if (m && m.length > 1) {
+	         return m[1] + '.' + url.split('.').pop();
+	      }
+	   }
+	   return "";
+	}
+    </script>
+</head>
+<body>
+
+	<input type="text" 		id="file_url" 		value="http://blogs.adobe.com/adobeingovernment/files/2012/07/phonegap.jpg" />
+	<input type="button" 	id="download_btn" 	value="Download" />
+
+	<div id="message"></div>
+
+</body>
+</html>

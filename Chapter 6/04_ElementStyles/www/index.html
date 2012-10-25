@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width;" />
+	<title>XUI</title>	
+	<script type="text/javascript" src="xui.js"></script>
+	<script type="text/javascript" src="cordova-2.0.0.js"></script>
+    <script type="text/javascript">
+    	
+	x$(window).on('load', onLoad);
+		
+    function onLoad() {
+		x$.ready(function() {
+			document.addEventListener("deviceready", onDeviceReady, false);
+		});
+    }
+	
+	function resizeFont(element, property, direction, alterBy) {
+		var sizeType = property.replace(/[0-9]+/, "");
+		var fontSize = property.replace(/[^-\d\.]/g, "");
+		if('-' === direction) {
+			fontSize = parseInt(fontSize) - alterBy;
+		} else {
+			fontSize = parseInt(fontSize) + alterBy;
+		}
+		element.setStyle('font-size', fontSize + sizeType);
+	}
+	
+	function onDeviceReady() {
+		x$('button').on('click', function(e) {
+			var selectedButton = x$('#' + this.id + '');
+			if(!selectedButton.hasClass('active')) {
+				selectedButton.addClass('active');
+				selectedButton.getStyle('font-size', function(property) {
+					resizeFont(selectedButton, property ,'+', 5);
+				});
+			} else {
+				selectedButton.removeClass('active');
+				selectedButton.getStyle('font-size', function(property) {
+					resizeFont(selectedButton, property ,'-', 5);
+				});
+			}
+		});
+	}
+
+	</script>
+</head>
+<body>
+
+	<button id="one">Button One</button>
+	<button id="two">Button Two</button>
+	<button id="three">Button Three</button>
+
+</body>
+</html>
+<style>
+button { 
+	background: rgba(100, 100, 100, 0.6);
+	color: #fff;
+	padding: 5px 10px;
+	float: left;
+	margin: 5px 5px 0 0;
+	border-radius: 2px;
+	font-size: 11px;
+	font-weight: 600;
+	cursor: pointer;
+	border: none;
+}
+button.active {
+	background: #EEA839; 
+	color: #fff; 
+	padding: 5px 10px; 
+	float: left; 
+	margin: 5px 5px 0 0; 
+	border-radius: 3px; 
+	font-size: 11px; 
+	font-weight: 600; 
+	cursor: pointer;
+	border: none;
+}
+</style>

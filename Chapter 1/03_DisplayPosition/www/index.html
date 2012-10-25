@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name="viewport" content="user-scalable=no, 
+		initial-scale=1, maximum-scale=1, 
+		minimum-scale=1, width=device-width;" />
+	<title>Accelerometer Data</title>
+
+	<script type="text/javascript" 
+			src="cordova-2.0.0.js"></script>	
+	<script type="text/javascript">
+		<!-- Add PhoneGap script here -->
+	// The watch id variable is set as a 
+	// reference to the current `watchAcceleration`
+	var watchID = null;
+		
+	// The radius for our circle object
+	var radius	= 50;
+
+	// Set the event listener to run when the device is ready
+	document.addEventListener("deviceready", 
+					onDeviceReady, false);
+	
+	// The device is ready so let's 
+	// start watching the acceleration
+	function onDeviceReady() {
+	
+		startWatch();
+	
+	}
+
+	// Watch the acceleration at regular 
+	// intervals as set by the frequency
+	function startWatch() {
+	
+		// Set the frequency of updates from the acceleration
+	   var options = { frequency: 100 };
+	
+		// Assign watchAcceleration to the watchID variable
+		// and pass through the options array
+		watchID = 
+			navigator.accelerometer.watchAcceleration(
+				onSuccess, onError, options);
+	}
+
+	function onSuccess(acceleration) {
+			
+		// Initial X Y positions
+		var x = 0;
+		var y = 0;
+			
+		// Velocity / Speed
+		var vx = 0;
+		var vy = 0;
+			
+		// Acceleration
+		var accelX = 0;
+		var accelY = 0;
+			
+		// Multiplier to create proper pixel measurements
+		var vMultiplier	=	100;
+	
+		// Create a reference to our div elements
+		var dot = document.getElementById('dot');
+		var accelElement = 			
+					document.getElementById('accelerometerData');
+	
+	
+		// The rest of the code will go here
+		accelX = acceleration.x;
+	accelY = acceleration.y;
+			
+	vy = vy + -(accelY);
+	vx = vx + accelX;
+			
+	y = parseInt(y + vy * vMultiplier);
+	x = parseInt(x + vx * vMultiplier);
+
+	if (x<0) { x = 0; vx = 0; }
+	if (y<0) { y = 0; vy = 0; }
+	
+	if (x>document.documentElement.clientWidth-radius) { 
+		x = document.documentElement.clientWidth-radius; vx = 0; 
+	}
+	
+	if (y>document.documentElement.clientHeight-radius) { 
+		y = document.documentElement.clientHeight-radius; vy = 0; 
+	}
+
+	// Apply the position to the dot element
+	dot.style.top 	= y + "px";
+	dot.style.left = x + "px";
+			
+	// Output the acceleration results to the screen
+	accelElement.innerHTML = 
+		'Acceleration X: ' 	+ acceleration.x + '<br />' +
+		'Acceleration Y: ' 	+ acceleration.y + '<br />' +
+	   'Acceleration Z: ' 	+ acceleration.z + '<br />' +
+	   'Timestamp: '      	+ acceleration.timestamp + '<br />' +
+		'Move Top: ' 			+ y + 'px<br />' +
+		'Move Left: ' 			+ x + 'px';
+	}
+
+
+	
+
+
+	// Run if we face an error 
+	// obtaining the accelerometer data
+	function onError() {
+		
+		// Handle any errors we may face
+		var accelElement = 
+				document.getElementById('accelerometerData');
+	   
+		accelElement.innerHTML = 
+			'Sorry, I was unable to access the acceleration data.';
+	}
+
+	</script>
+
+</head>
+<body>
+
+	<h1>Accelerometer Movement</h1>
+	
+	<div id="dot"></div>
+	
+	<div id="accelerometerData">Obtaining data...</div>
+
+</body>
+</html>
+
+<style>
+div#dot {
+  border-radius: 14px;
+  width: 25px;
+  height: 25px;
+  background: #ff0000;
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+}
+</style>

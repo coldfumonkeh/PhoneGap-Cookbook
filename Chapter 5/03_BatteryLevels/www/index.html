@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width;" />
+	<title>Resuming an application</title>	
+	<script type="text/javascript" src="cordova-2.0.0.js"></script>
+	<script type="text/javascript" src="xui.js"></script>
+    <script type="text/javascript">
+	function onLoad() {
+        document.addEventListener("deviceready", onDeviceReady, false);
+    }
+			
+	function onDeviceReady() {
+		window.addEventListener("batterystatus", onBatteryStatus, false);
+		window.addEventListener("batterylow", onBatteryLow, false);
+		window.addEventListener("batterycritical", onBatteryCritical, false);
+	}
+	
+	function onBatteryStatus(battery_info) {
+		setBatteryInfo(battery_info);
+	}
+	
+	function onBatteryLow(battery_info) { // 20
+		navigator.notification.alert(
+		    'Time to charge it up!',
+		    function() {}, // alert dismissed
+		    'Low Battery',
+		    'OK'
+		);
+	}
+	
+	function onBatteryCritical(battery_info) { // 5
+		navigator.notification.alert(
+		    'Seriously, plug your charger in!',
+		    function() {}, // alert dismissed
+		    'Critical Battery',
+		    'OK'
+		);
+	}
+	
+	function setBatteryInfo(battery_info) {
+		x$('#batteryLevel').setStyle('width', battery_info.level + '%');
+		var statusMessage = '<p>Percent: <span id="level">' + battery_info.level + '%</span></p>';
+			statusMessage = statusMessage + '<p>A/C: ' + chargingStatus(battery_info.isPlugged) + '</p>';
+		x$('#statusMessage').html(statusMessage);
+		if(battery_info.level <= 20) {
+			x$('#level').addClass('warning');
+			x$('#batteryLevel').setStyle('backgroundColor', '#E74A4A');
+		} else {
+			x$('#batteryLevel').setStyle('backgroundColor', '#01A206');
+		}
+	}
+		
+	function chargingStatus(isPlugged) {
+		if(isPlugged) { return 'Connected'; }
+		return 'Disconnected';
+	}
+	
+	</script>
+</head>
+<body onload="onLoad()">
+
+	<h3>Battery Status</h3>
+	
+	<div id="statusMessage"></div>
+
+	<div id="batteryIndicator">
+        <div id="batteryLevel">
+            <div id="shade" />
+        </div>
+    </div>
+
+</body>
+</html>
+
+<style>
+    #batteryIndicator { margin: 0 auto; width: 250px; height: 100px; border: 1px solid #ccc; background: #fff; border-radius: 10px; overflow: hidden; }
+    #batteryLevel { height: 100%; }
+    #shade { width: 100%; height: 15px; background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#e5e5e5), to(#fff)); opacity: 0.2; position: relative; top: 15px; }
+	.warning { color: #ff0000; font-weight: bold; }
+</style>
