@@ -1,0 +1,70 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>XUI API Reference</title>
+<meta name="generator" content="joDoc">
+<link rel="stylesheet" type="text/css" href="docbody.css">
+<link rel="stylesheet" type="text/css" href="doc.css">
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no, width=device-width">
+<meta name="format-detection" content="false">
+</head>
+<body>
+<h1><a name="Fx">Fx</a></h1>
+
+<p>Animations, transforms, and transitions for getting the most out of hardware accelerated CSS.</p>
+
+<h2>Tween</h2>
+
+<p>Transforms a CSS property's value.</p>
+
+<h3>syntax</h3>
+
+<pre><code>x$( selector ).tween( properties, callback );
+</code></pre>
+
+<h3>arguments</h3>
+
+<ul>
+<li>properties <code>Object</code> or <code>Array</code> of CSS properties to tween.
+<ul>
+<li><code>Object</code> is a JSON object that defines the CSS properties.</li>
+<li><code>Array</code> is a <code>Object</code> set that is tweened sequentially.</li>
+</ul></li>
+<li>callback <code>Function</code> to be called when the animation is complete. <em>(optional)</em>.</li>
+</ul>
+
+<h3>properties</h3>
+
+<p>A property can be any CSS style, referenced by the JavaScript notation.</p>
+
+<p>A property can also be an option from <a class="external" href="https://github.com/madrobby/emile">emile.js</a>:</p>
+
+<ul>
+<li>duration <code>Number</code> of the animation in milliseconds.</li>
+<li>after <code>Function</code> is called after the animation is finished.</li>
+<li><p>easing <code>Function</code> allows for the overriding of the built-in animation function.</p>
+
+<pre><code>// Receives one argument `pos` that indicates position
+// in time between animation's start and end.
+function(pos) {
+    // return the new position
+    return (-Math.cos(pos * Math.PI) / 2) + 0.5;
+}
+</code></pre></li>
+</ul>
+
+<h3>example</h3>
+
+<pre><code>// one JSON object
+x$('#box').tween({ left:'100px', backgroundColor:'blue' });
+x$('#box').tween({ left:'100px', backgroundColor:'blue' }, function() {
+    alert('done!');
+});
+
+// array of two JSON objects
+x$('#box').tween([{left:'100px', backgroundColor:'green', duration:.2 }, { right:'100px' }]);
+</code></pre>
+
+</body>
+</html>

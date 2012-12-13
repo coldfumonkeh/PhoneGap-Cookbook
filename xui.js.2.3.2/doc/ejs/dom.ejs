@@ -1,0 +1,86 @@
+
+<h1><a name="DOM">DOM</a></h1>
+
+<p>Set of methods for manipulating the Document Object Model (<a href="dom#DOM">DOM</a>).</p>
+
+<h2>html</h2>
+
+<p>Manipulates HTML in the <a href="dom#DOM">DOM</a>. Also just returns the inner HTML of elements in the collection if called with no arguments.</p>
+
+<h3>syntax</h3>
+
+<pre><code>x$( window ).html( location, html );
+</code></pre>
+
+<p>or this method will accept just a HTML fragment with a default behavior of inner:</p>
+
+<pre><code>x$( window ).html( html );
+</code></pre>
+
+<p>or you can use shorthand syntax by using the location name argument as the function name:</p>
+
+<pre><code>x$( window ).outer( html );
+x$( window ).before( html );
+</code></pre>
+
+<p>or you can just retrieve the inner HTML of elements in the collection with:</p>
+
+<pre><code>x$( document.body ).html();
+</code></pre>
+
+<h3>arguments</h3>
+
+<ul>
+<li>location <code>String</code> can be one of: <em>inner</em>, <em>outer</em>, <em>top</em>, <em>bottom</em>, <em>remove</em>, <em>before</em> or <em>after</em>.</li>
+<li>html <code>String</code> is a string of HTML markup or a <code>HTMLElement</code>.</li>
+</ul>
+
+<h3>example</h3>
+
+<pre><code>x$('#foo').html('inner', '&lt;strong&gt;rock and roll&lt;/strong&gt;');
+x$('#foo').html('outer', '&lt;p&gt;lock and load&lt;/p&gt;');
+x$('#foo').html('top',   '&lt;div&gt;bangers and mash&lt;/div&gt;');
+x$('#foo').html('bottom','&lt;em&gt;mean and clean&lt;/em&gt;');
+x$('#foo').html('remove');
+x$('#foo').html('before', '&lt;p&gt;some warmup html&lt;/p&gt;');
+x$('#foo').html('after',  '&lt;p&gt;more html!&lt;/p&gt;');
+</code></pre>
+
+<p>or</p>
+
+<pre><code>x$('#foo').html('&lt;p&gt;sweet as honey&lt;/p&gt;');
+x$('#foo').outer('&lt;p&gt;free as a bird&lt;/p&gt;');
+x$('#foo').top('&lt;b&gt;top of the pops&lt;/b&gt;');
+x$('#foo').bottom('&lt;span&gt;bottom of the barrel&lt;/span&gt;');
+x$('#foo').before('&lt;pre&gt;first in line&lt;/pre&gt;');
+x$('#foo').after('&lt;marquee&gt;better late than never&lt;/marquee&gt;');
+</code></pre>
+
+<h2>attr</h2>
+
+<p>Gets or sets attributes on elements. If getting, returns an array of attributes matching the xui element collection's indices.</p>
+
+<h3>syntax</h3>
+
+<pre><code>x$( window ).attr( attribute, value );
+</code></pre>
+
+<h3>arguments</h3>
+
+<ul>
+<li>attribute <code>String</code> is the name of HTML attribute to get or set.</li>
+<li>value <code>Varies</code> is the value to set the attribute to. Do not use to get the value of attribute <em>(optional)</em>.</li>
+</ul>
+
+<h3>example</h3>
+
+<p>To get an attribute value, simply don't provide the optional second parameter:</p>
+
+<pre><code>x$('.someClass').attr('class');
+</code></pre>
+
+<p>To set an attribute, use both parameters:</p>
+
+<pre><code>x$('.someClass').attr('disabled', 'disabled');
+</code></pre>
+

@@ -1,0 +1,162 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>XUI API Reference</title>
+<meta name="generator" content="joDoc">
+<link rel="stylesheet" type="text/css" href="docbody.css">
+<link rel="stylesheet" type="text/css" href="doc.css">
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no, width=device-width">
+<meta name="format-detection" content="false">
+</head>
+<body>
+<h1><a name="Event">Event</a></h1>
+
+<p>A good old fashioned events with new skool handling. Shortcuts exist for:</p>
+
+<ul>
+<li>click</li>
+<li>load</li>
+<li>touchstart</li>
+<li>touchmove</li>
+<li>touchend</li>
+<li>touchcancel</li>
+<li>gesturestart</li>
+<li>gesturechange</li>
+<li>gestureend</li>
+<li>orientationchange</li>
+</ul>
+
+<h2>on</h2>
+
+<p>Registers a callback function to a <a href="js_dom.js.html#DOM">DOM</a> event on the element collection.</p>
+
+<h3>syntax</h3>
+
+<pre><code>x$( 'button' ).on( type, fn );
+</code></pre>
+
+<p>or</p>
+
+<pre><code>x$( 'button' ).click( fn );
+</code></pre>
+
+<h3>arguments</h3>
+
+<ul>
+<li>type <code>String</code> is the event to subscribe (e.g. <em>load</em>, <em>click</em>, <em>touchstart</em>, etc).</li>
+<li>fn <code>Function</code> is a callback function to execute when the event is fired.</li>
+</ul>
+
+<h3>example</h3>
+
+<pre><code>x$( 'button' ).on( 'click', function(e) {
+    alert('hey that tickles!');
+});
+</code></pre>
+
+<p>or</p>
+
+<pre><code>x$(window).load(function(e) {
+  x$('.save').touchstart( function(evt) { alert('tee hee!'); }).css(background:'grey');
+});
+</code></pre>
+
+<h2>un</h2>
+
+<p>Unregisters a specific callback, or if no specific callback is passed in, 
+unregisters all event callbacks of a specific type.</p>
+
+<h3>syntax</h3>
+
+<p>Unregister the given function, for the given type, on all button elements:</p>
+
+<pre><code>x$( 'button' ).un( type, fn );
+</code></pre>
+
+<p>Unregisters all callbacks of the given type, on all button elements:</p>
+
+<pre><code>x$( 'button' ).un( type );
+</code></pre>
+
+<h3>arguments</h3>
+
+<ul>
+<li>type <code>String</code> is the event to unsubscribe (e.g. <em>load</em>, <em>click</em>, <em>touchstart</em>, etc).</li>
+<li>fn <code>Function</code> is the callback function to unsubscribe <em>(optional)</em>.</li>
+</ul>
+
+<h3>example</h3>
+
+<pre><code>// First, create a click event that display an alert message
+x$('button').on('click', function() {
+    alert('hi!');
+});
+
+// Now unsubscribe all functions that response to click on all button elements
+x$('button').un('click');
+</code></pre>
+
+<p>or</p>
+
+<pre><code>var greeting = function() { alert('yo!'); };
+
+x$('button').on('click', greeting);
+x$('button').on('click', function() {
+    alert('hi!');
+});
+
+// When any button is clicked, the 'hi!' message will fire, but not the 'yo!' message.
+x$('button').un('click', greeting);
+</code></pre>
+
+<h2>fire</h2>
+
+<p>Triggers a specific event on the xui collection.</p>
+
+<h3>syntax</h3>
+
+<pre><code>x$( selector ).fire( type, data );
+</code></pre>
+
+<h3>arguments</h3>
+
+<ul>
+<li>type <code>String</code> is the event to fire (e.g. <em>load</em>, <em>click</em>, <em>touchstart</em>, etc).</li>
+<li>data <code>Object</code> is a JSON object to use as the event's <code>data</code> property.</li>
+</ul>
+
+<h3>example</h3>
+
+<pre><code>x$('button#reset').fire('click', { died:true });
+
+x$('.target').fire('touchstart');
+</code></pre>
+
+<h2>ready</h2>
+
+<p><a href="js_event.js.html#Event">Event</a> handler for when the <a href="js_dom.js.html#DOM">DOM</a> is ready. Thank you <a class="external" href="http://www.github.com/ded/domready">domready</a>!</p>
+
+<h3>syntax</h3>
+
+<pre><code>x$.ready(handler);
+</code></pre>
+
+<h3>arguments</h3>
+
+<ul>
+<li>handler <code>Function</code> event handler to be attached to the "dom is ready" event.</li>
+</ul>
+
+<h3>example</h3>
+
+<p>x$.ready(function() {
+     alert('mah doms are ready');
+   });</p>
+
+<p>xui.ready(function() {
+     console.log('ready, set, go!');
+   });</p>
+
+</body>
+</html>

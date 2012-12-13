@@ -1,0 +1,196 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>XUI API Reference</title>
+<meta name="generator" content="joDoc">
+<link rel="stylesheet" type="text/css" href="docbody.css">
+<link rel="stylesheet" type="text/css" href="doc.css">
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no, width=device-width">
+<meta name="format-detection" content="false">
+</head>
+<body>
+<h1><a name="Style">Style</a></h1>
+
+<p>Everything related to appearance. Usually, this is CSS.</p>
+
+<h2>setStyle</h2>
+
+<p>Sets the value of a single CSS property.</p>
+
+<h3>syntax</h3>
+
+<pre><code>x$( selector ).setStyle( property, value );
+</code></pre>
+
+<h3>arguments</h3>
+
+<ul>
+<li>property <code>String</code> is the name of the property to modify.</li>
+<li>value <code>String</code> is the new value of the property.</li>
+</ul>
+
+<h3>example</h3>
+
+<pre><code>x$('.flash').setStyle('color', '#000');
+x$('.button').setStyle('backgroundColor', '#EFEFEF');
+</code></pre>
+
+<h2>getStyle</h2>
+
+<p>Returns the value of a single CSS property. Can also invoke a callback to perform more specific processing tasks related to the property value.
+Please note that the return type is always an Array of strings. Each string corresponds to the CSS property value for the element with the same index in the xui collection.</p>
+
+<h3>syntax</h3>
+
+<pre><code>x$( selector ).getStyle( property, callback );
+</code></pre>
+
+<h3>arguments</h3>
+
+<ul>
+<li>property <code>String</code> is the name of the CSS property to get.</li>
+<li>callback <code>Function</code> is called on each element in the collection and passed the property <em>(optional)</em>.</li>
+</ul>
+
+<h3>example</h3>
+
+<pre><code>   &lt;ul id="nav"&gt;
+       &lt;li class="trunk" style="font-size:12px;background-color:blue;"&gt;hi&lt;/li&gt;
+       &lt;li style="font-size:14px;"&gt;there&lt;/li&gt;
+   &lt;/ul&gt;
+
+x$('ul#nav li.trunk').getStyle('font-size'); // returns ['12px']
+x$('ul#nav li.trunk').getStyle('fontSize'); // returns ['12px']
+x$('ul#nav li').getStyle('font-size'); // returns ['12px', '14px']
+
+x$('ul#nav li.trunk').getStyle('backgroundColor', function(prop) {
+    alert(prop); // alerts 'blue' 
+});
+</code></pre>
+
+<h2>addClass</h2>
+
+<p>Adds a class to all of the elements in the collection.</p>
+
+<h3>syntax</h3>
+
+<pre><code>x$( selector ).addClass( className );
+</code></pre>
+
+<h3>arguments</h3>
+
+<ul>
+<li>className <code>String</code> is the name of the CSS class to add.</li>
+</ul>
+
+<h3>example</h3>
+
+<pre><code>x$('.foo').addClass('awesome');
+</code></pre>
+
+<h2>hasClass</h2>
+
+<p>Checks if the class is on <em>all</em> elements in the xui collection.</p>
+
+<h3>syntax</h3>
+
+<pre><code>x$( selector ).hasClass( className, fn );
+</code></pre>
+
+<h3>arguments</h3>
+
+<ul>
+<li>className <code>String</code> is the name of the CSS class to find.</li>
+<li><p>fn <code>Function</code> is a called for each element found and passed the element <em>(optional)</em>.</p>
+
+<pre><code>// `element` is the HTMLElement that has the class
+function(element) {
+    console.log(element);
+}
+</code></pre></li>
+</ul>
+
+<h3>example</h3>
+
+<pre><code>   &lt;div id="foo" class="foo awesome"&gt;&lt;/div&gt;
+   &lt;div class="foo awesome"&gt;&lt;/div&gt;
+   &lt;div class="foo"&gt;&lt;/div&gt;
+
+// returns true
+x$('#foo').hasClass('awesome');
+
+// returns false (not all elements with class 'foo' have class 'awesome'),
+// but the callback gets invoked with the elements that did match the 'awesome' class
+x$('.foo').hasClass('awesome', function(element) {
+    console.log('Hey, I found: ' + element + ' with class "awesome"');
+});
+
+// returns true (all DIV elements have the 'foo' class)
+x$('div').hasClass('foo');
+</code></pre>
+
+<h2>removeClass</h2>
+
+<p>Removes the specified class from all elements in the collection. If no class is specified, removes all classes from the collection.</p>
+
+<h3>syntax</h3>
+
+<pre><code>x$( selector ).removeClass( className );
+</code></pre>
+
+<h3>arguments</h3>
+
+<ul>
+<li>className <code>String</code> is the name of the CSS class to remove. If not specified, then removes all classes from the matched elements. <em>(optional)</em></li>
+</ul>
+
+<h3>example</h3>
+
+<pre><code>x$('.foo').removeClass('awesome');
+</code></pre>
+
+<h2>toggleClass</h2>
+
+<p>Removes the specified class if it exists on the elements in the xui collection, otherwise adds it. </p>
+
+<h3>syntax</h3>
+
+<pre><code>x$( selector ).toggleClass( className );
+</code></pre>
+
+<h3>arguments</h3>
+
+<ul>
+<li>className <code>String</code> is the name of the CSS class to toggle.</li>
+</ul>
+
+<h3>example</h3>
+
+<pre><code>   &lt;div class="foo awesome"&gt;&lt;/div&gt;
+
+x$('.foo').toggleClass('awesome'); // div above loses its awesome class.
+</code></pre>
+
+<h2>css</h2>
+
+<p>Set multiple CSS properties at once.</p>
+
+<h3>syntax</h3>
+
+<pre><code>x$( selector ).css( properties );
+</code></pre>
+
+<h3>arguments</h3>
+
+<ul>
+<li>properties <code>Object</code> is a JSON object that defines the property name/value pairs to set.</li>
+</ul>
+
+<h3>example</h3>
+
+<pre><code>x$('.foo').css({ backgroundColor:'blue', color:'white', border:'2px solid red' });
+</code></pre>
+
+</body>
+</html>

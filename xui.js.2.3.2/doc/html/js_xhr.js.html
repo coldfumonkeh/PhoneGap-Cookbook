@@ -1,0 +1,102 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>XUI API Reference</title>
+<meta name="generator" content="joDoc">
+<link rel="stylesheet" type="text/css" href="docbody.css">
+<link rel="stylesheet" type="text/css" href="doc.css">
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no, width=device-width">
+<meta name="format-detection" content="false">
+</head>
+<body>
+<h1><a name="XHR">XHR</a></h1>
+
+<p>Everything related to remote network connections.</p>
+
+<h2>xhr</h2>
+
+<p>The classic <code>XMLHttpRequest</code> sometimes also known as the Greek hero: <em>Ajax</em>. Not to be confused with <em>AJAX</em> the cleaning agent.</p>
+
+<h3>detail</h3>
+
+<p>This method has a few new tricks.</p>
+
+<p>It is always invoked on an element collection and uses the behaviour of <code>html</code>.</p>
+
+<p>If there is no callback, then the <code>responseText</code> will be inserted into the elements in the collection.</p>
+
+<h3>syntax</h3>
+
+<pre><code>x$( selector ).xhr( location, url, options )
+</code></pre>
+
+<p>or accept a url with a default behavior of inner:</p>
+
+<pre><code>x$( selector ).xhr( url, options );
+</code></pre>
+
+<p>or accept a url with a callback:</p>
+
+<pre><code>x$( selector ).xhr( url, fn );
+</code></pre>
+
+<h3>arguments</h3>
+
+<ul>
+<li>location <code>String</code> is the location to insert the <code>responseText</code>. See <code>html</code> for values.</li>
+<li>url <code>String</code> is where to send the request.</li>
+<li>fn <code>Function</code> is called on status 200 (i.e. success callback).</li>
+<li>options <code>Object</code> is a JSON object with one or more of the following:
+<ul>
+<li>method <code>String</code> can be <em>get</em>, <em>put</em>, <em>delete</em>, <em>post</em>. Default is <em>get</em>.</li>
+<li>async <code>Boolean</code> enables an asynchronous request. Defaults to <em>false</em>.</li>
+<li>data <code>String</code> is a url encoded string of parameters to send.
+       - error <code>Function</code> is called on error or status that is not 200. (i.e. failure callback).</li>
+<li>callback <code>Function</code> is called on status 200 (i.e. success callback).</li>
+<li>headers <code>Object</code> is a JSON object with key:value pairs that get set in the request's header set.</li>
+</ul></li>
+</ul>
+
+<h3>response</h3>
+
+<ul>
+<li>The response is available to the callback function as <code>this</code>.</li>
+<li>The response is not passed into the callback.</li>
+<li><code>this.reponseText</code> will have the resulting data from the file.</li>
+</ul>
+
+<h3>example</h3>
+
+<pre><code>x$('#status').xhr('inner', '/status.html');
+x$('#status').xhr('outer', '/status.html');
+x$('#status').xhr('top',   '/status.html');
+x$('#status').xhr('bottom','/status.html');
+x$('#status').xhr('before','/status.html');
+x$('#status').xhr('after', '/status.html');
+</code></pre>
+
+<p>or</p>
+
+<pre><code>// same as using 'inner'
+x$('#status').xhr('/status.html');
+
+// define a callback, enable async execution and add a request header
+x$('#left-panel').xhr('/panel', {
+    async: true,
+    callback: function() {
+        alert("The response is " + this.responseText);
+    },
+   headers:{
+       'Mobile':'true'
+   }
+});
+
+// define a callback with the shorthand syntax
+x$('#left-panel').xhr('/panel', function() {
+    alert("The response is " + this.responseText);
+});
+</code></pre>
+
+</body>
+</html>
